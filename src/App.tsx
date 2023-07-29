@@ -1,26 +1,69 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import { nanoid } from "nanoid";
 
-function App() {
+const App = () => {
+  interface Todo {
+    id: string;
+    title: string;
+    body: string;
+    isDone: boolean;
+  }
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [title, setTitle] = useState<string>("");
+  const [body, setBody] = useState<string>("");
+
+  const onChangeTitle = (event: React.FormEvent<HTMLInputElement>): void => {
+    const {
+      currentTarget: { value },
+    } = event;
+    setTitle(value);
+  };
+
+  const onChangeBody = (event: React.FormEvent<HTMLInputElement>): void => {
+    const {
+      currentTarget: { value },
+    } = event;
+    setBody(value);
+  };
+
+  const resetInput = (): void => {
+    setTitle("");
+    setBody("");
+  };
+
+  const onSubmitHandler = (event: React.FormEvent<HTMLFormElement>): void => {
+    event.preventDefault();
+    const newTodo: Todo = {
+      id: nanoid(),
+      title,
+      body,
+      isDone: false,
+    };
+    setTodos([...todos, newTodo]);
+    resetInput();
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <form onSubmit={onSubmitHandler}>
+        <label>제목</label>
+        <input type="text" value={title} onChange={onChangeTitle}></input>
+        <label>내용</label>
+        <input type="text" value={body} onChange={onChangeBody}></input>
+        <button type="submit">추가</button>
+      </form>
+      <div>
+        {todos.map((todo) => {
+          return (
+            <div key={todo.id}>
+              <p>{todo.title}</p>
+              <p>{todo.body}</p>
+            </div>
+          );
+        })}
+      </div>
+    </>
   );
-}
+};
 
 export default App;
